@@ -1,5 +1,6 @@
 TARGET = kernel.elf
-OBJS = main.O2
+OBJS = main.o graphics.o font.o
+DEPENDS = $(join $(dir $(OBJS)),$(addprefix .,$(notdir $(OBJS:.o=.d))))
 
 # CPPFLAGS += -I${HOME}/workspace/mikanos/osbook/devenv/x86_64-elf/include/c++/v1 \
 # 			-I${HOME}/workspace/mikanos/osbook/devenv/x86_64-elf/include \
@@ -12,7 +13,7 @@ OBJS = main.O2
 # こういったビット数の固定を行うため、<cstdint>を利用しているが、そのヘッダの場所を`-I`オプションで指定
 # データの仕様を確定させるためのABI的な？
 
-CXXFLAGS += -O2 -Wall -g --target=x86_64-elf --ffreestanding -mno-red-zone \
+CXXFLAGS += -O2 -Wall -g --target=x86_64-elf -ffreestanding -mno-red-zone \
 			-fno-exceptions -fno-rtti -std=c++17
 # -O2 					: 最適化
 # -Wall 				: 警告
@@ -42,3 +43,14 @@ kernel.elf: $(OBJS) Makefile
 
 %.o: %.cpp Makefile
 	clang++ $(CPPFLAGS) $(CXXFLAGS) -c $<
+
+.%.d: %.cpp
+	clang++ $(CPPFLAGS) $(CXXFLAGS) -MM $< > $@
+	$(eval OBJ = $(<:.cpp=.o))
+	sed -I '' -e 's|$(notdir $(OBJ))|$(OBJ)|' $@
+
+.PHONY: depends
+depends:
+	$(MAKE) $(DEPENDS)
+
+-include $(DEPENDS)

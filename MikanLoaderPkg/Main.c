@@ -402,7 +402,7 @@ EFI_STATUS EFIAPI UefiMain(EFI_HANDLE image_handle,
     Elf64_Ehdr *kernel_ehdr = (Elf64_Ehdr *)kernel_buffer;
     // LOADセグメントから、ELFファイルが配備されるべき仮想アドレスの先頭と末尾(範囲)を取得
     UINT64 kernel_first_addr, kernel_last_addr;
-    CalcLoadAddressRange(kernel_ehdr, kernel_first_addr, kernel_last_addr);
+    CalcLoadAddressRange(kernel_ehdr, &kernel_first_addr, &kernel_last_addr);
 
     // ページ数の計算 (4KiB単位で換算)
     UINTN num_pages = (kernel_last_addr - kernel_first_addr + 0xfff) / 0x1000;
@@ -475,7 +475,7 @@ EFI_STATUS EFIAPI UefiMain(EFI_HANDLE image_handle,
     case PixelBlueGreenRedReserved8BitPerColor:
         config.pixel_format = kPixelBGRResv8BitPerColor;
         break;
-    defalut:
+    default:
         Print(L"Unimplemented pixel format: %d\n", gop->Mode->Info->PixelFormat);
         Halt();
     }
