@@ -174,6 +174,8 @@ EFI_STATUS OpenRootDir(EFI_HANDLE image_handle, EFI_FILE_PROTOCOL **root)
 }
 
 // グラフィック操作プロトコルの取得
+// gopを介して、フレームバッファの先頭アドレスや、解像度・非表示領域を含めた幅、
+// 1ピクセルのデータ形式などを取得できる。
 EFI_STATUS OpenGOP(EFI_HANDLE image_handle,
                    EFI_GRAPHICS_OUTPUT_PROTOCOL **gop)
 {
@@ -208,8 +210,6 @@ EFI_STATUS OpenGOP(EFI_HANDLE image_handle,
 
     return EFI_SUCCESS;
 }
-// gopを介して、フレームバッファの先頭アドレスや、解像度・非表示領域を含めた幅、
-// 1ピクセルのデータ形式などを取得できる。
 
 // 1ピクセルのデータ形式をテキストに変換する関数
 const CHAR16 *GetPixelFormatUnicode(EFI_GRAPHICS_PIXEL_FORMAT fmt)
@@ -362,7 +362,7 @@ EFI_STATUS EFIAPI UefiMain(EFI_HANDLE image_handle,
         Halt();
     }
 
-    // 読み込んだELFファイルのファイル情報について、ファイル名を含めたバイト数を計算し、
+    // 読み込んだELFファイルのファイル情報について、ファイル名(ヌル文字含む\kernel.elf)を含めたバイト数を計算し、
     // そのサイズでファイル情報を書き込むためのバッファを作成
     UINTN file_info_size = sizeof(EFI_FILE_INFO) + sizeof(CHAR16) * 12;
     UINT8 file_info_buffer[file_info_size];
@@ -404,7 +404,7 @@ EFI_STATUS EFIAPI UefiMain(EFI_HANDLE image_handle,
     UINT64 kernel_first_addr, kernel_last_addr;
     CalcLoadAddressRange(kernel_ehdr, &kernel_first_addr, &kernel_last_addr);
 
-    // ページ数の計算 (4KiB単位で換算)
+    // ページ数の計算 (4KiB単位に換算)と、メモリの確保
     UINTN num_pages = (kernel_last_addr - kernel_first_addr + 0xfff) / 0x1000;
     status = gBS->AllocatePages(AllocateAddress, EfiLoaderData,
                                 num_pages, &kernel_first_addr);

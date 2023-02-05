@@ -39,7 +39,7 @@ clean:
 	rm -rf *.o
 
 kernel.elf: $(OBJS) Makefile
-	ld.lld $(LDFLAGS) -o $@ $(OBJS)
+	ld.lld $(LDFLAGS) -o $@ $(OBJS) hankaku.o
 
 %.o: %.cpp Makefile
 	clang++ $(CPPFLAGS) $(CXXFLAGS) -c $<

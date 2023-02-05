@@ -33,13 +33,13 @@ typedef struct
 typedef struct
 {
     Elf64_Word p_type;    // セグメント種別 (PHDR, LOADなど)
-    Elf64_Word p_flags;   // フラグ
+    Elf64_Word p_flags;   // フラグ (R, E, W, など)
     Elf64_Off p_offset;   // ファイル先頭からのオフセット
     Elf64_Addr p_vaddr;   // 格納されるべき?仮想アドレス
-    Elf64_Addr p_paddr;   //
+    Elf64_Addr p_paddr;   //　格納されるべき?物理アドレス
     Elf64_Xword p_filesz; // ファイルサイズ
     Elf64_Xword p_memsz;  // メモリサイズ
-    Elf64_Xword p_align;
+    Elf64_Xword p_align;  // 整列
 } Elf64_Phdr;
 
 #define PT_NULL 0

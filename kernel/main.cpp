@@ -60,6 +60,12 @@ extern "C" void KernelMain(const FrameBufferConfig &frame_buffer_config)
             pixel_writer->Write(x, y, {0, 255, 0});
         }
     }
+
+    int i = 0;
+    for (char c = '!'; c <= '~'; ++c, ++i) {
+        WriteAscii(*pixel_writer, 8 * i, 50, c, {0, 0, 0});
+    }
+
     while (1)
         // アセンブリを直接呼び出した方(インラインアセンブリ)が待機中のCPU使用率を節約できる
         // ただし、ニーモニックは GNU Assembly の文法でしか書けない
