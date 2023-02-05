@@ -2,7 +2,7 @@ TARGET = kernel.elf
 OBJS = main.o graphics.o font.o hankaku.o newlib_support.o
 DEPENDS = $(join $(dir $(OBJS)),$(addprefix .,$(notdir $(OBJS:.o=.d))))
 
-CFLAGS   += -O2 -Wall -g --target=x86_64-elf -ffreestanding -mno-red-zone
+CFLAGS += -O2 -Wall -g --target=x86_64-elf -ffreestanding -mno-red-zone
 # CPPFLAGS += -I${HOME}/workspace/mikanos/osbook/devenv/x86_64-elf/include/c++/v1 \
 # 			-I${HOME}/workspace/mikanos/osbook/devenv/x86_64-elf/include \
 # 			-I${HOME}/workspace/mikanos/osbook/devenv/x86_64-elf/include/freetype2 \
@@ -25,7 +25,7 @@ CXXFLAGS += -O2 -Wall -g --target=x86_64-elf -ffreestanding -mno-red-zone \
 # -fno-rtti				: C++の動的型情報(OSのサポートが必要)を使わない
 # -c					: コンパイルのみ
 
-LDFLAGS  += --entry KernelMain -z norelro --image-base 0x100000 --static
+LDFLAGS += --entry KernelMain -z norelro --image-base 0x100000 --static
 # --entry KernelMain 	: KernelMain()をエントリポイントとする
 # -z norelro 			: リロケーション情報読み込み専用にする機能を使わない
 # --image-base 0x100000 : 出力されたバイナリのベースアドレスを0x100000番地にする
