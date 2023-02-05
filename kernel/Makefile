@@ -1,7 +1,8 @@
 TARGET = kernel.elf
-OBJS = main.o graphics.o font.o
+OBJS = main.o graphics.o font.o hankaku.o newlib_support.o
 DEPENDS = $(join $(dir $(OBJS)),$(addprefix .,$(notdir $(OBJS:.o=.d))))
 
+CFLAGS   += -O2 -Wall -g --target=x86_64-elf -ffreestanding -mno-red-zone
 # CPPFLAGS += -I${HOME}/workspace/mikanos/osbook/devenv/x86_64-elf/include/c++/v1 \
 # 			-I${HOME}/workspace/mikanos/osbook/devenv/x86_64-elf/include \
 # 			-I${HOME}/workspace/mikanos/osbook/devenv/x86_64-elf/include/freetype2 \
@@ -39,7 +40,7 @@ clean:
 	rm -rf *.o
 
 kernel.elf: $(OBJS) Makefile
-	ld.lld $(LDFLAGS) -o $@ $(OBJS) hankaku.o
+	ld.lld $(LDFLAGS) -o $@ $(OBJS) -lc
 
 %.o: %.cpp Makefile
 	clang++ $(CPPFLAGS) $(CXXFLAGS) -c $<
@@ -48,6 +49,23 @@ kernel.elf: $(OBJS) Makefile
 	clang++ $(CPPFLAGS) $(CXXFLAGS) -MM $< > $@
 	$(eval OBJ = $(<:.cpp=.o))
 	sed -I '' -e 's|$(notdir $(OBJ))|$(OBJ)|' $@
+
+%.o: %.c Makefile
+	clang $(CPPFLAGS) $(CFLAGS) -c $<
+
+.%.d: %.c
+	clang $(CPPFLAGS) $(CFLAGS) -MM $< > $@
+	$(eval OBJ = $(<:.c=.o))
+	sed -I '' -e 's|$(notdir $(OBJ))|$(OBJ)|' $@
+
+hankaku.bin: hankaku.txt
+	python ../tools/makefont.py -o $@ $<
+
+hankaku.o: hankaku.bin
+	objcopy -I binary -O elf64-x86-64 -B i386:x86-64 $< $@
+
+.%.d: %.bin
+	touch $@
 
 .PHONY: depends
 depends:
